@@ -17,7 +17,7 @@ exports.create = (req, res) => {
         }).catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while creating the Tutorial."
+                    err.message || "Không thể thạo mới"
             });
         });
 }
@@ -31,17 +31,17 @@ exports.update = (req, res) => {
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was updated successfully.",
+                    message: "Cập nhật thành công",
                 });
             } else {
                 res.send({
-                    message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`,
+                    message: `không thể cập nhật với id=${id}.`,
                 });
             }
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error updating Tutorial with id=" + id,
+                message: "có lỗi khi cập nhật với id=" + id,
             });
         });
 };
@@ -63,6 +63,11 @@ exports.findOne = (req, res) => {
 
     Class.findByPk(id)
         .then((data) => {
+            if(data == null){
+                return res.send({
+                    message: "không tồn tại"
+                })
+            }
             res.send(data);
         })
         .catch((err) => {

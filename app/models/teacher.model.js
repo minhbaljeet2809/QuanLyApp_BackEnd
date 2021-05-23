@@ -11,9 +11,13 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false
             },
+            level: {
+                type: DataTypes.STRING(30),
+                allowNull: false
+            },
             birthday: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: true
             },
             address: {
                 type: DataTypes.STRING,

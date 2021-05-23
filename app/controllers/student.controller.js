@@ -24,7 +24,7 @@ exports.create = (req, res) => {
         .catch((err) => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while creating the Tutorial.",
+                    err.message || "Tạo mới không thành công",
             });
         });
 };
@@ -38,17 +38,17 @@ exports.update = (req, res) => {
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was updated successfully.",
+                    message: "Cập nhật thành công",
                 });
             } else {
                 res.send({
-                    message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`,
+                    message: `không thể cập nhật với id=${id}.`,
                 });
             }
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error updating Tutorial with id=" + id,
+                message: "Lỗi cập nhật với id=" + id,
             });
         });
 };
@@ -61,7 +61,7 @@ exports.findAll = (req, res) => {
         .catch((err) => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving tutorials.",
+                    err.message || "Không tìm thấy thông tin",
             });
         });
 }
@@ -75,7 +75,7 @@ exports.findOne = (req, res) => {
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error retrieving Tutorial with id=" + id,
+                message: "Không tìm thấy thông tin với id=" + id,
             });
         });
 };
@@ -91,7 +91,7 @@ exports.findByName = (req, res) => {
         .catch((err) => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving tutorials.",
+                    err.message || "Không tìm thấy thông tin.",
             });
         });
 };
@@ -105,11 +105,11 @@ exports.delete = (req, res) => {
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was deleted successfully!",
+                    message: "Xoá thành công!",
                 });
             } else {
                 res.send({
-                    message: `Cannot delete Tutorial with id=${id}. Maybe Tutorial was not found!`,
+                    message: `không thể xoá với id=${id}.`,
                 });
             }
         })

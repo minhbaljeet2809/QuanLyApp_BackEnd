@@ -21,34 +21,46 @@ exports.createNews = (req, res) =>{
     }).catch(err => {
         res.status(500).send({
             message:
-                err.message || "Some error occurred while creating the Tutorial."
+                err.message || "Có lỗi khi tạo tin tức."
         });
     });
 }
 
 exports.updateNews = (req, res) => {
     const id = req.params.id;
-
     News.update(req.body, {
         where: { id: id },
     })
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was updated successfully.",
+                    message: "Cập nhật tin tức thành công",
                 });
             } else {
                 res.send({
-                    message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`,
+                    message: `không thể cập nhật tin tức với id=${id}.`,
                 });
             }
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error updating Tutorial with id=" + id,
+                message: "Có lỗi khi cập nhật với id=" + id,
             });
         });
 };
+
+exports.findAll = ( req, res) => {
+    News.findAll()
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message:
+                    err.message || "có lỗi.",
+            });
+        });
+}
 
 exports.findOneNews = (req, res) => {
     const id = req.params.id;
@@ -59,7 +71,7 @@ exports.findOneNews = (req, res) => {
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error retrieving Tutorial with id=" + id,
+                message: "không tìm thấy tin tức với id=" + id,
             });
         });
 };
@@ -75,7 +87,7 @@ exports.findByTitleNews = (req, res) => {
         .catch((err) => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving tutorials.",
+                    err.message || "không tìm thấy tin tức",
             });
         });
 };
@@ -89,11 +101,11 @@ exports.deleteNews = (req, res) => {
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was deleted successfully!",
+                    message: "Xoá tin tức thành công",
                 });
             } else {
                 res.send({
-                    message: `Cannot delete Tutorial with id=${id}. Maybe Tutorial was not found!`,
+                    message: `Không thể xoá tin tức với id=${id}.`,
                 });
             }
         })

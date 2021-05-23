@@ -1,12 +1,13 @@
+const e = require("express");
 const db = require("../models");
 const Op = db.Op;
 const Teacher = db.teacher;
-
 
 exports.create = (req, res) => {
     const data = req.body;
     const teacher = {
         name: data.name,
+        level: data.level,
         birthday: data.birthday,
         address: data.address,
         phone: data.phone,
@@ -21,32 +22,32 @@ exports.create = (req, res) => {
         }).catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while creating the Tutorial."
+                    err.message || "Có lỗi xảy ra"
             });
         });
 }
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
     const id = req.params.id;
-    Teacher.update(req.body, {
-        where: { id: id },
-    })
-        .then((num) => {
-            if (num == 1) {
-                res.send({
-                    message: "Tutorial was updated successfully.",
-                });
-            } else {
-                res.send({
-                    message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`,
-                });
-            }
-        })
-        .catch((err) => {
-            res.status(500).send({
-                message: "Error updating Tutorial with id=" + id,
+    const data = req.body;
+    console.log(data);
+    try {
+        const updateTeacher = await Teacher.update(data, { where: { id: id } });
+        console.log(updateTeacher);
+        if (updateTeacher == 1) {
+            res.send({
+                message: "Cập nhật thành công",
             });
+        } else {
+            res.status(501).send({
+                message: `Không thể cập nhật với id=${id}!`,
+            });
+        }
+    } catch (err) {
+        res.status(500).send({
+            message: "có lỗi cập nhật với id=" + id,
         });
+    }
 };
 
 exports.findOne = (req, res) => {
@@ -58,7 +59,21 @@ exports.findOne = (req, res) => {
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error retrieving Tutorial with id=" + id,
+                message: "không thể tìm kiếm với id=" + id,
+            });
+        });
+};
+
+exports.findAll = (req, res) => {
+
+    Teacher.findAll()
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message:
+                    err.message || " không thể tìm kiếm.",
             });
         });
 };
@@ -74,7 +89,7 @@ exports.findByName = (req, res) => {
         .catch((err) => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving tutorials.",
+                    err.message || "không thể tìm kiếm",
             });
         });
 };
@@ -88,17 +103,17 @@ exports.delete = (req, res) => {
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was deleted successfully!",
+                    message: "Xoá thành công!",
                 });
             } else {
                 res.send({
-                    message: `Cannot delete Tutorial with id=${id}. Maybe Tutorial was not found!`,
+                    message: `xoá thất bại với id=${id}. `,
                 });
             }
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Could not delete Tutorial with id=" + id,
+                message: "không thể xoá với id=" + id,
             });
         });
 };

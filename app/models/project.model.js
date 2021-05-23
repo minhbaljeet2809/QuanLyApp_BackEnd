@@ -9,8 +9,8 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
             },
             name: {
                 type: DataTypes.STRING,
-                allowNull: false 
-            },    
+                allowNull: false
+            },
             projectRequest: {
                 type: DataTypes.STRING,
                 allowNull: false
@@ -19,7 +19,7 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false
             },
-            majors:{
+            majors: {
                 type: DataTypes.STRING,
             },
             idTeacher: {
@@ -29,8 +29,15 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
             nameTeacher: {
                 type: DataTypes.STRING,
             },
+            idStudent: {
+                type: DataTypes.UUID,
+                defaultValue: Sequelize.UUIDV4,
+            },
+            nameStudent: {
+                type: DataTypes.STRING,
+            },
             state: {
-                type:DataTypes.BOOLEAN,
+                type: DataTypes.BOOLEAN,
                 defaultValue: false
             }
         },

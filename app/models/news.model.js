@@ -13,14 +13,14 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
                 allowNull: false,
             },
             subTitle: {
-                type: DataTypes.STRING
+                type: DataTypes.STRING(500),
             },
             idImageUrl: {
                 type: DataTypes.UUID,
                 defaultValue: Sequelize.UUIDV4,
             },
             content: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(1000),
                 allowNull: false
             },
             type: {

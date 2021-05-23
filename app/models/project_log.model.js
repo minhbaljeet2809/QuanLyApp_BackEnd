@@ -17,6 +17,9 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
             studentRate: {
                 type: DataTypes.INTEGER,
             },
+            teacherRate: {
+                type: DataTypes.INTEGER,
+            },
             attitudeStudy: {
                 type: DataTypes.STRING,
             },
@@ -24,6 +27,9 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
                 type: DataTypes.STRING,
             },
             abilityRate: {
+                type: DataTypes.STRING
+            },
+            planState: {
                 type: DataTypes.STRING
             }
         },{

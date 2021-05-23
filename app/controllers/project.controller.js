@@ -4,10 +4,12 @@ const Project = db.project;
 const ProjectLog = db.project_log;
 const ProjectStageLog = db.project_stage_log;
 const ProjectReviews = db.project_reviews;
+const Student = db.student;
+const Teacher = db.teacher;
 
 //Project controller
 
-exports.createProject = (req, res) =>{
+exports.createProject = (req, res) => {
     const data = req.body;
 
     const project = {
@@ -21,14 +23,14 @@ exports.createProject = (req, res) =>{
     };
 
     Project.create(project)
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while creating the Tutorial."
+        .then(data => {
+            res.send(data);
+        }).catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Có lỗi khi tạo."
+            });
         });
-    });
 };
 
 exports.updateProject = (req, res) => {
@@ -40,33 +42,54 @@ exports.updateProject = (req, res) => {
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was updated successfully.",
+                    message: "Cập nhật dữ liệu thành công",
                 });
             } else {
                 res.send({
-                    message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`,
+                    message: `Không thể cập nhật với id=${id}.`,
                 });
             }
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Error updating Tutorial with id=" + id,
+                message: "Có lỗi khi cập nhật với id=" + id,
             });
         });
 };
 
-exports.findOneProject = (req, res) => {
+exports.findOneProject = async (req, res) => {
     const id = req.params.id;
-
-    Project.findByPk(id)
-        .then((data) => {
-            res.send(data);
-        })
-        .catch((err) => {
-            res.status(500).send({
-                message: "Error retrieving Tutorial with id=" + id,
+    try {
+        const project = await Project.findByPk(id);
+        if (!project.id) {
+            res.status(203).send({
+                message: "khong tim thay id=" + id,
             });
+        }
+        const idTeacher = project.idTeacher ? project.idTeacher : "null";
+        const idStudent = project.idStudent ? project.idStudent : "null";
+
+        const teacher = await Teacher.findByPk(idTeacher);
+        const student = await Student.findByPk(idStudent);
+        res.status(200).send({
+            name: project.name,
+            nameTeacher: project.nameTeacher,
+            phoneTeacher: teacher ? teacher.phone : "",
+            emailTeacher: teacher ? teacher.email : "",
+            workspaceTeacher: teacher.workspace ? teacher.workspace : "",
+            majors: project.majors,
+            nameStudent: student ? student.name : "",
+            phoneStudent: student ? student.phone : "",
+            emailStudent: student ? student.email : "",
+            projectContent: project.projectContent,
+            projectRequest: project.projectRequest,
         });
+    } catch (err) {
+        res.status(500).send({
+            message: "có lỗi khi tìm kiếm với id=" + id,
+        });
+    };
+
 };
 
 exports.findByNameProject = (req, res) => {
@@ -80,10 +103,22 @@ exports.findByNameProject = (req, res) => {
         .catch((err) => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving tutorials.",
+                    err.message || "Có lỗi trong khi tìm kiếm.",
             });
         });
 };
+
+exports.findAllProject = async (req, res) => {
+    try {
+        const projectList = await Project.findAll();
+        res.send(projectList);
+    } catch (err) {
+        res.status(500).send({
+            message:
+                err.message || "Có lỗi trong khi tìm kiếm.",
+        });
+    }
+}
 
 exports.deleteProject = (req, res) => {
     const id = req.params.id;
@@ -94,17 +129,17 @@ exports.deleteProject = (req, res) => {
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Tutorial was deleted successfully!",
+                    message: "Xoá thành công!",
                 });
             } else {
                 res.send({
-                    message: `Cannot delete Tutorial with id=${id}. Maybe Tutorial was not found!`,
+                    message: `Không thể xoá với id=${id}. Có thể dữ liệu k tồn tại`,
                 });
             }
         })
         .catch((err) => {
             res.status(500).send({
-                message: "Could not delete Tutorial with id=" + id,
+                message: "Không thể xoá với id=" + id,
             });
         });
 };
@@ -113,25 +148,27 @@ exports.deleteProject = (req, res) => {
 
 exports.createProjectLog = (req, res) => {
     const data = req.body;
-    
+
     const project_log = {
         idProject: data.idProject,
         stage: data.stage,
         studentRate: data.studentRate,
+        teacherRate: data.teacherRate,
         attitudeStudy: data.attitudeStudy,
         attWithTeacher: data.attWithTeacher,
         abilityRate: data.abilityRate,
+        planState: data.planState,
     };
 
     ProjectLog.create(project_log)
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while creating the Tutorial."
+        .then(data => {
+            res.send(data);
+        }).catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while creating the Tutorial."
+            });
         });
-    });
 }
 
 exports.updateProjectLog = (req, res) => {
@@ -172,6 +209,24 @@ exports.findOneProjectLog = (req, res) => {
         });
 };
 
+exports.findProjectLog = (req, res) => {
+    const idProject = req.params.idProject;
+    const stage = req.params.stage;
+    ProjectLog.findAll({
+        where: {
+            idProject: idProject,
+            stage: stage
+        }
+    })
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message: "Error retrieving Tutorial with id=" + id,
+            });
+        });
+};
 
 exports.deleteProjectLog = (req, res) => {
     const id = req.params.id;
@@ -200,7 +255,7 @@ exports.deleteProjectLog = (req, res) => {
 //Project_Stage_log Controller
 exports.createProjectStageLog = (req, res) => {
     const data = req.body;
-    
+
     const project_stage_log = {
         idProjectLog: data.idProjectLog,
         content: data.content,
@@ -208,14 +263,14 @@ exports.createProjectStageLog = (req, res) => {
     };
 
     ProjectStageLog.create(project_stage_log)
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while creating the Tutorial."
+        .then(data => {
+            res.send(data);
+        }).catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while creating the Tutorial."
+            });
         });
-    });
 }
 
 exports.updateProjectStageLog = (req, res) => {
@@ -256,6 +311,19 @@ exports.findOneProjectStageLog = (req, res) => {
         });
 };
 
+exports.findAllProjectStageLog = (req, res) => {
+    const id = req.params.id;
+
+    ProjectStageLog.findAll()
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message: "Error retrieving Tutorial with id=" + id,
+            });
+        });
+};
 
 exports.deleteProjectStageLog = (req, res) => {
     const id = req.params.id;
@@ -284,20 +352,20 @@ exports.deleteProjectStageLog = (req, res) => {
 //Project_reviews Controller
 exports.createProjectReviews = (req, res) => {
     const data = req.body;
-    
+
     const project_reviews = {
         name: data.name,
     };
 
     ProjectReviews.create(project_reviews)
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while creating the Tutorial."
+        .then(data => {
+            res.send(data);
+        }).catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while creating the Tutorial."
+            });
         });
-    });
 }
 
 exports.updateProjectReviews = (req, res) => {

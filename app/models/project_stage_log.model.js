@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
                 type: DataTypes.STRING
             },
             percent:{
-                type: DataTypes.INTEGER
+                type: DataTypes.STRING(10)
             }
         },{
             timestamps: true,
