@@ -2,6 +2,7 @@ const e = require("express");
 const db = require("../models");
 const Op = db.Op;
 const Teacher = db.teacher;
+const Project = db.project;
 
 exports.create = (req, res) => {
     const data = req.body;
@@ -94,26 +95,29 @@ exports.findByName = (req, res) => {
         });
 };
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
+    const id = req.params.id;
+    const teacher = await Teacher.findByPk(id);
+    if (!teacher.id) {
+        return res.status(404).send({ message: "không tồn tại giảng viên" });
+    }
+    const deleteTeacher = await Teacher.destroy({where: { id: teacher.id }});
+    if(!deleteTeacher){
+        return res.status(500).send({ message: "xoá thất bại"});
+    }
+    res.status(200).send({ message: "Xoá thành công" });
+};
+
+exports.checkTeacher = async (req, res) => {
     const id = req.params.id;
 
-    Teacher.destroy({
-        where: { id: id },
-    })
-        .then((num) => {
-            if (num == 1) {
-                res.send({
-                    message: "Xoá thành công!",
-                });
-            } else {
-                res.send({
-                    message: `xoá thất bại với id=${id}. `,
-                });
-            }
-        })
-        .catch((err) => {
-            res.status(500).send({
-                message: "không thể xoá với id=" + id,
-            });
-        });
-};
+    const teacher = await Teacher.findByPk(id);
+    if (!teacher.id) {
+        return res.status(404).send({ message: "không tồn tại giảng viên" });
+    }
+    const listProject = await Project.findAll({ where: { idTeacher: teacher.id } });
+    if(listProject && listProject.length > 0){
+        return res.status(205).send({ message: "giảng viên đang hướng dẫn dề tài" });
+    }
+    return res.status(200).send({ message: "giảng viên không hướng dẫn dề tài" });
+}

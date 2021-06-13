@@ -1,13 +1,13 @@
 module.exports = (sequelize, Sequelize, DataTypes) => {
-    const ProjectStageLog = sequelize.define(
-        'project_stage_log',
+    const ProjectProgressLog = sequelize.define(
+        'project_progress_log',
         {
             id: {
                 type: DataTypes.UUID,
                 defaultValue: Sequelize.UUIDV4,
                 primaryKey: true,
             },
-            idProjectLog: {
+            idProjectProgress: {
                 type: DataTypes.UUID,
                 defaultValue: Sequelize.UUIDV4,
             },
@@ -16,6 +16,9 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
             },
             percent:{
                 type: DataTypes.STRING(10)
+            },
+            worker:{
+                type: DataTypes.STRING(100)
             }
         },{
             timestamps: true,
@@ -24,6 +27,6 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
             updatedAt: "updated_at"
         }
     );
-    return ProjectStageLog;
+    return ProjectProgressLog;
 
 }

@@ -8,4 +8,8 @@ module.exports = function (app) {
     app.post('/api/v1/teacher/create', controller.create);
 
     app.post('/api/v1/teacher/update/:id', controller.update);
+
+    app.get('/api/v1/teacher/checkTeacher/:id', controller.checkTeacher);
+
+    app.delete('/api/v1/teacher/delete/:id', controller.delete);
 }

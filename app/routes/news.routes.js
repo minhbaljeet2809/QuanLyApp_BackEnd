@@ -13,5 +13,4 @@ module.exports = function (app) {
 
 
     app.post('/api/v1/news/create', controller.createNews);
-    app.post('/api/v1/create/image', controller.createImage);
 }

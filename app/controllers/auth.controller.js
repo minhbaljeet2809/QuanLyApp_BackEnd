@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const db = require("../models");
 const User = db.user;
 const Student = db.student;
+const Project = db.project;
 
 const Op = db.Op;
 
@@ -23,70 +24,55 @@ exports.signup = (req, res) => {
     });
 };
 
-exports.signin = (req, res) => {
-  User.findOne({
-    where: {
-      username: req.body.username
-    }
-  })
-    .then(user => {
-      if (!user) {
-        return res.status(404).send({ message: "User Not found." });
-      }
-      let passwordIsValid = bcrypt.compareSync(
-        req.body.password,
-        user.password
-      );
-      if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!"
-        });
-      }
-      let token = jwt.sign({ id: user.id }, config.auth.secret, {
-        expiresIn: 86400 // 24 hours
-      });
+exports.signin = async (req, res) => {
+  const data = req.body;
 
-      if (user.role == 'student') {
-        Student.findAll({ where: { idUser: user.id } })
-          .then((data) => {
-            res.status(200).send({
-              id: user.id,
-              username: user.username,
-              email: user.email,
-              role: user.role,
-              accessToken: token,
-              idStudent: data[0].id,
-              nameStudent: data[0].name,
-              birthday: data[0].birthday,
-              address: data[0].address,
-              phone: data[0].phone,
-              code: data[0].code,
-              email: data[0].email,
-              idClass: data[0].idClass,
-              majors: data[0].majors,
-              schoolYear: data[0].schoolYear,
-              image: data[0].image
-            });
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message:
-                err.message || "Không tìm thấy thông tin.",
-            });
-          });
-      }
-      // else {
-      //   res.status(200).send({
-      //     id: user.id,
-      //     username: user.username,
-      //     email: user.email,
-      //     role: user.role,
-      //     accessToken: token,
-      //   });
-      // }
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
+  try {
+    const user = await User.findOne({ where: { username: data.username } });
+    if (!user) return res.status(404).send({ message: "User Not found." });
+    let passwordIsValid = bcrypt.compareSync(
+      data.password,
+      user.password
+    );
+    if (!passwordIsValid) {
+      return res.status(401).send({
+        accessToken: null,
+        message: "Sai mật khẩu"
+      });
+    }
+    let token = jwt.sign({ id: user.id }, config.auth.secret, {
+      expiresIn: 86400 // 24 hours
     });
+    if (user.role == 'student') {
+      const student = await Student.findOne({ where: { idUser: user.id } });
+      if (!student) return res.status(404).send({ message: "student Not found." });
+      const project = await Project.findOne({ where: { idStudent: student.id } });
+      let idProject = "";
+      if (project) {
+        idProject = project.id;
+      }
+      res.status(200).send({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        accessToken: token,
+        idStudent: student.id,
+        nameStudent: student.name,
+        birthday: student.birthday,
+        address: student.address,
+        phone: student.phone,
+        code: student.code,
+        email: student.email,
+        idClass: student.idClass,
+        majors: student.majors,
+        schoolYear: student.schoolYear,
+        image: student.image,
+        idProject: idProject
+      });
+    }
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+
 };

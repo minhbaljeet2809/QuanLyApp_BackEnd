@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize, DataTypes) => {
-    const ProjectLog = sequelize.define(
-        'project_log',
+    const ProjectProgress = sequelize.define(
+        'project_progress',
         {
             id: {
                 type: DataTypes.UUID,
@@ -39,6 +39,6 @@ module.exports = (sequelize, Sequelize, DataTypes) => {
             updatedAt: "updated_at"
         }
     );
-    return ProjectLog;
+    return ProjectProgress;
 
 }

@@ -6,8 +6,6 @@ exports.create = (req, res) => {
     const data = req.body;
 
     const classes = {
-        idTeacher: data.idTeacher,
-        teacher: data.teacher,
         name: data.name,
     };
 
